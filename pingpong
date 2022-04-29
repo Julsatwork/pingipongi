@@ -1,0 +1,113 @@
+import pygame
+import sys
+pygame.init()
+
+screen_height = 600
+screen_width = 800
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((screen_width,screen_height))
+
+
+#COLORS RGB
+
+RED=(255,0,40)
+GREEN = (1,205,0)
+BLUE = (0,0,255)
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+
+
+player_paddle1 = pygame.Rect(0,screen_height/2 -50,10,100)
+player_paddle2 = pygame.Rect(screen_width - 10,screen_height/2 -50,10,100)
+ball = pygame.Rect(screen_width/2 -5,screen_height/2 -5,10,10)
+
+ball_speed_x = 6
+ball_speed_y = 4
+player_speed1 = 0
+player_speed2 = 0
+scoreA = 0
+scoreB = 0
+while True:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                player_speed1 = 5
+            if event.key == pygame.K_UP:
+                player_speed1 = -5
+            if event.key == pygame.K_w:
+                player_speed2 = -5
+            if event.key == pygame.K_s:
+                player_speed2 = 5
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                player_speed1 = 0
+            if event.key == pygame.K_UP:
+                player_speed1 = 0
+            if event.key == pygame.K_w:
+                player_speed2 = 0
+            if event.key == pygame.K_s:
+                player_speed2 = 0
+
+
+    ball.x += ball_speed_x
+    ball.y = ball.y + ball_speed_y
+
+    player_paddle1.y += player_speed1
+    player_paddle2.y += player_speed2
+
+    if ball.bottom >= screen_height or ball.top <= 0:
+       ball_speed_y = ball_speed_y * -1
+
+
+    if ball.left <=0:
+        ball.x = 400
+        ball.y = 300
+        scoreB += 1
+
+    if ball.right >= screen_width:
+       ball.x = 400
+       ball.y = 300
+       scoreA += 1
+
+
+    if player_paddle1.bottom >= screen_height:
+        player_paddle1.bottom = screen_height
+    if player_paddle1.top <= 0:
+        player_paddle1.top = 0
+
+    if player_paddle2.bottom >= screen_height:
+        player_paddle2.bottom = screen_height
+    if player_paddle2.top <= 0:
+        player_paddle2.top = 0
+
+    if ball.colliderect(player_paddle1) or ball.colliderect(player_paddle2):
+        ball_speed_x *= -1
+
+
+    font = pygame.font.Font(None, 74)
+    text = font.render(str(scoreA), 1, WHITE)
+    screen.blit(text, (250, 10))
+    text = font.render(str(scoreB), 1, WHITE)
+    screen.blit(text, (420, 10))
+
+
+
+
+    screen.fill(BLACK)
+    pygame.draw.rect(screen, GREEN ,player_paddle1)
+    pygame.draw.rect(screen, RED, player_paddle2)
+
+    pygame.draw.rect(screen, BLUE, ball)
+    font = pygame.font.Font(None, 74)
+    text = font.render(str(scoreA), 1, WHITE)
+    screen.blit(text, (100, 10))
+    text = font.render(str(scoreB), 1, WHITE)
+    screen.blit(text, (700, 10))
+
+    pygame.display.flip()
+    clock.tick(60)
